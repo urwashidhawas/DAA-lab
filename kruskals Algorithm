@@ -1,0 +1,91 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+#define INF 9999
+typedef struct{
+	int u,v,w;
+} Edge;
+int find(int parent[],int i){
+	if (parent[i]!=i)
+		parent[i]=find(parent,parent[i]);
+	return parent[i];
+}
+void union1(int parent[],int rank[],int i,int j){
+	int root_i=find(parent,i);
+	int root_j=find(parent,j);
+	if(rank[root_i] < rank[root_j]){
+		parent[root_i]=root_j;
+	}else if(rank[root_i]>rank[root_j]){
+		parent[root_j]=root_i;
+	}else{
+		
+parent[root_j]=root_i;
+		rank[root_i]++;
+	}
+}
+void kruskalMST(int **cost,int V){
+	int parent[V],rank[V];
+	for(int i=0;i<V;i++){
+		parent[i]=i;
+		rank[i]=0;
+	}
+	Edge edges[V * V];
+	int edgeIndex = 0;
+	for(int i=0; i<V; i++){
+		for (int j=i+1; j<V; j++){
+			if (cost[i][j] != INF){
+				edges[j] = temp;
+			}
+		}
+	}
+				}
+		}
+	}
+	for (int i=0; i<edgeIndex - 1; i++){
+		for (int j=i+1; j < edgeIndex; j++){
+			if (edges[j].w < edges[i].w || (edges[j].w == edges[i].w && edges[j].u < edges[i].u) || (edges[j].w == edges[i].w && edges[j].u == edges[i].u && edges[j].v < edges[i].v)){
+				Edge temp = edges[i];
+				edges[i] = edges[j];
+				edges[j] = temp;
+			}
+		}
+	}
+	int totalCost =0;
+	int edgesCount=0;
+	for(int i=0;i<edgeIndex && edgesCount<V-1;i++){
+		int u=edges[i].u;
+		int v=edges[i].v;
+		int w=edges[i].w;
+		int set_u=find(parent,u);
+		int set_v=find(parent,v);
+		if(set_u != set_v){
+			printf("Edge %d:(%d, %d) cost:%d\n",edgesCount,u,v,w);
+			totalCost += w;
+			union1(parent,rank,set_u,set_v);
+			edgesCount++;
+		}
+	}
+	printf("Minimum cost= %d\n",totalCost);
+}
+int main() {
+    int V;
+    printf("No of vertices: ");
+    scanf("%d", &V);
+
+    int **cost = (int **)malloc(V * sizeof(int *));
+    for (int i = 0; i < V; i++)
+        cost[i] = (int *)malloc(V * sizeof(int));
+
+    printf("Adjacency matrix:\n");
+    for (int i = 0; i < V; i++)
+        for (int j = 0; j < V; j++)
+            scanf("%d", &cost[i][j]);
+
+    kruskalMST(cost, V);
+
+    for (int i = 0; i < V; i++)
+        free(cost[i]);
+    free(cost);
+
+    return 0;
+}
